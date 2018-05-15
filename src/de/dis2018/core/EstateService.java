@@ -191,6 +191,23 @@ public class EstateService {
 	 */
 	public void deleteEstateAgent(EstateAgent ea) {
 		//Hibernate Session erzeugen
+		Set<Apartment> apartments = this.getAllApartmentsForEstateAgent(ea);
+		Iterator<Apartment> it_a = apartments.iterator();
+		while(it_a.hasNext()) {
+			Apartment i = it_a.next();
+			i.setManager(null);
+			this.editApartment(i);
+		}
+		
+		Set<House> houses = this.getAllHousesForEstateAgent(ea);
+		Iterator<House> it_h = houses.iterator();
+		
+		while(it_h.hasNext()) {
+			House i = it_h.next();
+			i.setManager(null);
+			this.editHouse(i);
+		}
+		
 		Session session = sessionFactory.openSession();
 		try {
 			session.beginTransaction();
@@ -275,11 +292,59 @@ public class EstateService {
 	 * @param p The person
 	 */
 	public void deletePerson(Person p) {
-		//Hibernate Session erzeugen
 		Session session = sessionFactory.openSession();
+		List<PurchaseContract> p_contracts;
+		List<TenancyContract> t_contracts;
 		try {
 			session.beginTransaction();
-			session.delete(p);
+			/*
+			CriteriaQuery<PurchaseContract> criteriaQuery_p = session.getCriteriaBuilder().createQuery(PurchaseContract.class);
+			CriteriaQuery<TenancyContract> criteriaQuery_t = session.getCriteriaBuilder().createQuery(TenancyContract.class);
+			Root<PurchaseContract> root_p = criteriaQuery_p.from(PurchaseContract.class);
+			Root<TenancyContract> root_t = criteriaQuery_t.from(TenancyContract.class);
+			*/
+			Query<TenancyContract> query_t = session.createQuery("from TenancyContract where person = :id");
+			query_t.setParameter("id", p.getId());
+			Query<PurchaseContract> query_p = session.createQuery("from PurchaseContract where person = :id");
+			query_p.setParameter("id", p.getId());
+			//criteriaQuery_p.where(session.getCriteriaBuilder().equal(root_p.get("person"), p.getId()));
+		    //criteriaQuery_t.where(session.getCriteriaBuilder().equal(root_t.get("person"), p.getId()));
+			//Hibernate Session erzeugen
+			//p_contracts = session.createQuery(criteriaQuery_p).getResultList();
+			//t_contracts = session.createQuery(criteriaQuery_t).getResultList();
+			t_contracts = query_t.getResultList();
+			p_contracts = query_p.getResultList();
+			session.getTransaction().commit();
+			
+			session.beginTransaction();
+			//Hibernate Session erzeugen
+			Iterator<PurchaseContract> it_p = p_contracts.iterator();
+			while(it_p.hasNext()) {
+				PurchaseContract i = it_p.next();
+				i.setContractPartner(null);
+				session.update(i);
+			}
+			
+			Iterator<TenancyContract> it_t = t_contracts.iterator();
+			
+			while(it_t.hasNext()) {
+				TenancyContract i = it_t.next();
+				i.setContractPartner(null);
+				session.update(i);
+			}
+			session.getTransaction().commit();
+		}catch(NoResultException e) {
+			if (session.getTransaction() != null) {
+            	session.getTransaction().rollback();
+        	}
+			System.out.println("The house has no contract.");
+		}
+		
+		//Hibernate Session erzeugen
+
+		try {
+			session.beginTransaction();
+			session.delete(session.get(Person.class, p.getId()));
 			session.getTransaction().commit();
 		}catch(TransientObjectException e){
 			if (session.getTransaction() != null) {
@@ -385,11 +450,28 @@ public class EstateService {
 	 * @param h The house
 	 */
 	public void deleteHouse(House h) {
-		//Hibernate Session erzeugen
 		Session session = sessionFactory.openSession();
 		try {
 			session.beginTransaction();
-			session.delete(h);
+			CriteriaQuery<PurchaseContract> criteriaQuery = session.getCriteriaBuilder().createQuery(PurchaseContract.class);
+			Root<PurchaseContract> root = criteriaQuery.from(PurchaseContract.class);
+			criteriaQuery.where(session.getCriteriaBuilder().equal(root.get("house"), h.getId()));
+			//Hibernate Session erzeugen
+			PurchaseContract t_contract = session.createQuery(criteriaQuery).getSingleResult();
+			t_contract.setHouse(null);
+			session.update(t_contract);
+			session.getTransaction().commit();
+		}catch(NoResultException e) {
+			if (session.getTransaction() != null) {
+            	session.getTransaction().rollback();
+        	}
+			System.out.println("The house has no contract.");
+		}
+		//Hibernate Session erzeugen
+
+		try {
+			session.beginTransaction();
+			session.delete(session.get(House.class, h.getId()));
 			session.getTransaction().commit();
 		}catch(TransientObjectException e){
 			if (session.getTransaction() != null) {
@@ -495,11 +577,28 @@ public class EstateService {
 	 * @param p The apartment
 	 */
 	public void deleteApartment(Apartment w) {
-		//Hibernate Session erzeugen
 		Session session = sessionFactory.openSession();
 		try {
 			session.beginTransaction();
-			session.delete(w);
+			CriteriaQuery<TenancyContract> criteriaQuery = session.getCriteriaBuilder().createQuery(TenancyContract.class);
+			Root<TenancyContract> root = criteriaQuery.from(TenancyContract.class);
+			criteriaQuery.where(session.getCriteriaBuilder().equal(root.get("apartment"), w.getId()));
+			//Hibernate Session erzeugen
+			TenancyContract t_contract = session.createQuery(criteriaQuery).getSingleResult();
+			t_contract.setApartment(null);
+			session.update(t_contract);
+			session.getTransaction().commit();
+		}catch(NoResultException e) {
+			if (session.getTransaction() != null) {
+            	session.getTransaction().rollback();
+        	}
+			System.out.println("Apartment has no contract.");
+		}
+		//Hibernate Session erzeugen
+
+		try {
+			session.beginTransaction();
+			session.delete(session.get(Apartment.class, w.getId()));
 			session.getTransaction().commit();
 		}catch(TransientObjectException e){
 			if (session.getTransaction() != null) {
