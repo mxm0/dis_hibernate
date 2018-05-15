@@ -165,6 +165,27 @@ public class EstateService {
 	}
 	
 	/**
+	 * Edits an estate agent
+	 * @param ea The estate agent
+	 */
+	public void editEstateAgent(EstateAgent ea) {
+		//Hibernate Session erzeugen
+		Session session = sessionFactory.openSession();
+		try {
+			session.beginTransaction();
+			session.update(ea);
+			session.getTransaction().commit();
+		}catch(TransientObjectException e){
+			if (session.getTransaction() != null) {
+            	session.getTransaction().rollback();
+        	}
+		}finally {
+			session.close();
+		}
+	}
+	
+	
+	/**
 	 * Deletes an estate agent
 	 * @param ea The estate agent
 	 */
@@ -194,6 +215,26 @@ public class EstateService {
 		try {
 			session.beginTransaction();
 			session.save(p);
+			session.getTransaction().commit();
+		}catch(TransientObjectException e){
+			if (session.getTransaction() != null) {
+            	session.getTransaction().rollback();
+        	}
+		}finally {
+			session.close();
+		}
+	}
+	
+	/**
+	 * Edits a person
+	 * @param p The person
+	 */
+	public void editPerson(Person p) {
+		//Hibernate Session erzeugen
+		Session session = sessionFactory.openSession();
+		try {
+			session.beginTransaction();
+			session.update(p);
 			session.getTransaction().commit();
 		}catch(TransientObjectException e){
 			if (session.getTransaction() != null) {
@@ -259,6 +300,26 @@ public class EstateService {
 		try {
 			session.beginTransaction();
 			session.save(h);
+			session.getTransaction().commit();
+		}catch(TransientObjectException e){
+			if (session.getTransaction() != null) {
+            	session.getTransaction().rollback();
+        	}
+		}finally {
+			session.close();
+		}
+	}
+	
+	/**
+	 * Edits a house
+	 * @param h The house
+	 */
+	public void editHouse(House h) {
+		//Hibernate Session erzeugen
+		Session session = sessionFactory.openSession();
+		try {
+			session.beginTransaction();
+			session.update(h);
 			session.getTransaction().commit();
 		}catch(TransientObjectException e){
 			if (session.getTransaction() != null) {
@@ -360,6 +421,26 @@ public class EstateService {
 	}
 	
 	/**
+	 * Edits an apartment
+	 * @param w the aparment
+	 */
+	public void editApartment(Apartment w) {
+		//Hibernate Session erzeugen
+		Session session = sessionFactory.openSession();
+		try {
+			session.beginTransaction();
+			session.update(w);
+			session.getTransaction().commit();
+		}catch(TransientObjectException e){
+			if (session.getTransaction() != null) {
+            	session.getTransaction().rollback();
+        	}
+		}finally {
+			session.close();
+		}
+	}
+	
+	/**
 	 * Returns all apartments of an estate agent
 	 * @param ea The estate agent
 	 * @return All apartments managed by the estate agent
@@ -450,6 +531,7 @@ public class EstateService {
 		}
 	}
 	
+	
 	/**
 	 * Adds a purchase contract
 	 * @param p The purchase contract
@@ -469,6 +551,7 @@ public class EstateService {
 			session.close();
 		}
 	}
+	
 	
 	/**
 	 * Finds a tenancy contract with a given ID

@@ -99,6 +99,7 @@ public class EstateAgentEditor {
 				m.setLogin(new_login);
 			if(!new_password.equals(""))
 				m.setPassword(new_password);
+			service.editEstateAgent(m);
 		}
 	}
 	
