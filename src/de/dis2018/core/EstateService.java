@@ -33,13 +33,14 @@ import de.dis2018.data.Apartment;
  */
 public class EstateService {
 	//TODO All these sets should be commented out after successful implementation.
+	/*
 	private Set<EstateAgent> estateAgents = new HashSet<EstateAgent>();
 	private Set<Person> persons = new HashSet<Person>();
 	private Set<House> houses = new HashSet<House>();
 	private Set<Apartment> apartments = new HashSet<Apartment>();
 	private Set<TenancyContract> tenancyContracts = new HashSet<TenancyContract>();
 	private Set<PurchaseContract> purchaseContracts = new HashSet<PurchaseContract>();
-	
+	*/
 	//Hibernate Session
 	private SessionFactory sessionFactory;
 	

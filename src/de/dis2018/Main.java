@@ -47,7 +47,7 @@ public class Main {
 		EstateAgentAuthenticator ma = new EstateAgentAuthenticator(service);
 		
 		//Test data
-		service.addTestData();
+		//service.addTestData();
 		
 		//Processed input
 		while(true) {
